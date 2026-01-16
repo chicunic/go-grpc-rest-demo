@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "go-grpc-rest-demo/api/gen/go/product/v1";
+
+// ProductService defines the service for managing products.
+service ProductService {
+  // CreateProduct creates a new product.
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  // GetProduct retrieves a product by its ID.
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  // UpdateProduct updates an existing product.
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+  // DeleteProduct deletes a product by its ID.
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+  // SearchProducts searches for products based on various criteria.
+  rpc SearchProducts(SearchProductsRequest) returns (SearchProductsResponse);
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 quantity = 5;
+  string category = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+  int32 quantity = 4;
+  string category = 5;
+}
+
+message CreateProductResponse {
+  Product product = 1;
+  string message = 2;
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message GetProductResponse {
+  Product product = 1;
+  string message = 2;
+}
+
+message UpdateProductRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional double price = 4;
+  optional int32 quantity = 5;
+  optional string category = 6;
+}
+
+message UpdateProductResponse {
+  Product product = 1;
+  string message = 2;
+}
+
+message DeleteProductRequest {
+  string id = 1;
+}
+
+message DeleteProductResponse {
+  string message = 1;
+}
+
+message SearchProductsRequest {
+  optional string query = 1;
+  optional string category = 2;
+  optional double min_price = 3;
+  optional double max_price = 4;
+  int32 page = 5;
+  int32 page_size = 6;
+}
+
+message SearchProductsResponse {
+  repeated Product products = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}

@@ -1,0 +1,375 @@
+basePath: /api/v1
+definitions:
+  model.CreateProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+      quantity:
+        minimum: 0
+        type: integer
+    required:
+    - category
+    - description
+    - name
+    - price
+    - quantity
+    type: object
+  model.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - full_name
+    - username
+    type: object
+  model.Product:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.ProductResponse:
+    properties:
+      message:
+        type: string
+      page:
+        type: integer
+      page_size:
+        type: integer
+      product:
+        $ref: '#/definitions/model.Product'
+      products:
+        items:
+          $ref: '#/definitions/model.Product'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  model.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      is_active:
+        type: boolean
+      username:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserResponse:
+    properties:
+      message:
+        type: string
+      page:
+        type: integer
+      page_size:
+        type: integer
+      success:
+        type: boolean
+      total_count:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+      users:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a demo API server with both gRPC and REST endpoints based on
+    protobuf definitions.
+  title: Go gRPC REST Demo API
+  version: "1.0"
+paths:
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with the provided information
+      parameters:
+      - description: Product information
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+      summary: Create a new product
+      tags:
+      - products
+  /products/{id}:
+    get:
+      description: Get a product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+      summary: Get product by ID
+      tags:
+      - products
+  /products/search:
+    get:
+      description: Search products with optional filters
+      parameters:
+      - description: Search query (matches name or description)
+        in: query
+        name: query
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: Minimum price filter
+        in: query
+        name: min_price
+        type: number
+      - description: Maximum price filter
+        in: query
+        name: max_price
+        type: number
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductResponse'
+      summary: Search products
+      tags:
+      - products
+  /users:
+    get:
+      description: Get a paginated list of users with optional filtering and sorting
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: page_size
+        type: integer
+      - description: Sort by field (username, email, full_name, created_at)
+        in: query
+        name: sort_by
+        type: string
+      - description: Filter by username, email, or full_name
+        in: query
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: List users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided information
+      parameters:
+      - description: User information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Delete a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      description: Get a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: Update user
+      tags:
+      - users
+schemes:
+- http
+swagger: "2.0"
